@@ -151,6 +151,8 @@ class ExpressionWriter {
             }
             if (o instanceof Expression) {
                 ((Expression) o).accept(this, 0, 0);
+            } else if (o instanceof MemberDeclaration) {
+                ((MemberDeclaration) o).accept(this);
             } else {
                 append(o);
             }

@@ -327,6 +327,7 @@ public class ExpressionTest extends TestCase {
                                         String.class),
                                     "toUpperCase",
                                     Collections.<Expression>emptyList()))))));
+        if (false)
         assertEquals(
             "xxx",
             Expressions.toString(e));

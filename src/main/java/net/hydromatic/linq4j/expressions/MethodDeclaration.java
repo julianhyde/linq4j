@@ -43,6 +43,11 @@ public class MethodDeclaration extends MemberDeclaration {
         this.parameters = parameters;
         this.body = body;
     }
+
+    @Override
+    public void accept(ExpressionWriter expressionWriter) {
+        throw new RuntimeException("todo:");
+    }
 }
 
 // End MethodDeclaration.java

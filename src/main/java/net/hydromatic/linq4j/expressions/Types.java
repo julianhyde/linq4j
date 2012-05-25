@@ -245,7 +245,7 @@ public class Types {
         Type type, Class... argumentTypes)
     {
         final Class clazz = toClass(type);
-        for (Constructor constructor : clazz.getConstructors()) {
+        for (Constructor constructor : clazz.getDeclaredConstructors()) {
             if (allAssignable(
                 constructor.isVarArgs(),
                 constructor.getParameterTypes(),
