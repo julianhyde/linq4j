@@ -356,6 +356,24 @@ public class BlockBuilder {
       }
       return super.visit(parameterExpression);
     }
+
+    @Override
+    public Expression visit(
+        BinaryExpression binaryExpression, Expression expression0,
+        Expression expression1) {
+      if (binaryExpression.getNodeType() == ExpressionType.Assign
+          && expression0 instanceof ParameterExpression) {
+        // int t;
+        // int v = (t = 1) != a ? c : d;
+        // ->
+        // int v = 1 != a ? c : d
+        if (map.containsKey(expression0)) {
+          return expression1.accept(this);
+        }
+      }
+      return super.visit(binaryExpression, expression0,
+          expression1);
+    }
   }
 
   private static class UseCounter extends Visitor {
