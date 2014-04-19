@@ -27,6 +27,8 @@ import java.util.*;
  * <p>Has methods that help ensure that variable names are unique.</p>
  */
 public class BlockBuilder {
+  private static final Visitor OPTIMIZE_VISITOR = new OptimizeVisitor();
+
   final List<Statement> statements = new ArrayList<Statement>();
   final Set<String> variables = new HashSet<String>();
   /** Contains final-fine-to-reuse-declarations.
@@ -319,7 +321,7 @@ public class BlockBuilder {
         new IdentityHashMap<ParameterExpression, Expression>();
     final SubstituteVariableVisitor visitor = new SubstituteVariableVisitor(
         subMap);
-    final OptimizeVisitor optimizer = new OptimizeVisitor();
+    final Visitor optimizer = createOptimizeVisitor();
     final ArrayList<Statement> oldStatements = new ArrayList<Statement>(
         statements);
     statements.clear();
@@ -382,6 +384,17 @@ public class BlockBuilder {
         }
       }
     }
+  }
+
+  /**
+   * Creates a visitor that will be used during block optimization.
+   * Subclasses might provide more specific optimizations (e.g. partial
+   * evaluation).
+   *
+   * @return visitor used to optimize the statements when converting to block
+   */
+  protected Visitor createOptimizeVisitor() {
+    return OPTIMIZE_VISITOR;
   }
 
   /**
