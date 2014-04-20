@@ -557,4 +557,17 @@ public class OptimizerTest extends BlockBuilderBase {
     assertEquals("{\n  return 1L;\n}\n", optimize(Expressions.convert_(ONE,
         long.class)));
   }
+
+  @Test public void booleanValueOfTrue() {
+    // Boolean.valueOf(true) -> true
+    assertEquals("{\n  return true;\n}\n", optimize(Expressions.call(
+        Boolean.class, "valueOf", TRUE)));
+  }
+
+  @Test
+  public void booleanValueOfFalse() {
+    // Boolean.valueOf(false) -> false
+    assertEquals("{\n  return false;\n}\n", optimize(Expressions.call(
+        Boolean.class, "valueOf", FALSE)));
+  }
 }
