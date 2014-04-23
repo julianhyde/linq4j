@@ -184,7 +184,6 @@ public class Linq4jTest {
   }
 
   @Test public void testAllPredicate() {
-
     Predicate1<Employee> allEmpnoGE100 = new Predicate1<Employee>() {
       public boolean apply(Employee emp) {
         return emp.empno >= 100;
@@ -208,7 +207,6 @@ public class Linq4jTest {
   }
 
   @Test public void testAnyPredicate() {
-
     Predicate1<Department> deptoNameIT = new Predicate1<Department>() {
       public boolean apply(Department v1) {
         return v1.name != null && v1.name.equals("IT");
