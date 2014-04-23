@@ -357,6 +357,45 @@ public class Linq4jTest {
             .toList().toString());
   }
 
+  @Test public void testContains() {
+    Employee e = emps[1];
+    Employee employeeClone = new Employee(e.empno, e.name, e.deptno);
+    Employee employeeOther = badEmps[0];
+
+    assertEquals(e, employeeClone);
+    assertTrue(Linq4j.asEnumerable(emps).contains(e));
+    assertTrue(Linq4j.asEnumerable(emps).contains(employeeClone));
+    assertFalse(Linq4j.asEnumerable(emps).contains(employeeOther));
+
+  }
+
+  @Test public void testContainsWithEqualityComparer() {
+    EqualityComparer<Employee> compareByEmpno =
+            new EqualityComparer<Employee>() {
+        public boolean equal(Employee e1, Employee e2) {
+          return e1 != null && e2 != null
+                  && e1.empno == e2.empno;
+        }
+
+        public int hashCode(Employee t) {
+          return t == null ? 0x789d : t.hashCode();
+        }
+      };
+
+    Employee e = emps[1];
+    Employee employeeClone = new Employee(e.empno, e.name, e.deptno);
+    Employee employeeOther = badEmps[0];
+
+    assertEquals(e, employeeClone);
+    assertTrue(Linq4j.asEnumerable(emps)
+            .contains(e, compareByEmpno));
+    assertTrue(Linq4j.asEnumerable(emps)
+            .contains(employeeClone, compareByEmpno));
+    assertFalse(Linq4j.asEnumerable(emps)
+            .contains(employeeOther, compareByEmpno));
+
+  }
+
   @SuppressWarnings("UnnecessaryBoxing")
   @Test public void testIdentityEqualityComparer() {
     final Integer one = new Integer(1);
@@ -1307,6 +1346,44 @@ public class Linq4jTest {
 
     public String toString() {
       return "Employee(name: " + name + ", deptno:" + deptno + ")";
+    }
+
+    @Override
+    public int hashCode() {
+      final int prime = 31;
+      int result = 1;
+      result = prime * result + deptno;
+      result = prime * result + empno;
+      result = prime * result + ((name == null) ? 0 : name.hashCode());
+      return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+      if (this == obj) {
+        return true;
+      }
+      if (obj == null) {
+        return false;
+      }
+      if (getClass() != obj.getClass()) {
+        return false;
+      }
+      Employee other = (Employee) obj;
+      if (deptno != other.deptno) {
+        return false;
+      }
+      if (empno != other.empno) {
+        return false;
+      }
+      if (name == null) {
+        if (other.name != null) {
+          return false;
+        }
+      } else if (!name.equals(other.name)) {
+        return false;
+      }
+      return true;
     }
   }
 
