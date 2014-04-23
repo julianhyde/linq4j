@@ -97,7 +97,15 @@ public abstract class EnumerableDefaults {
    */
   public static <TSource> boolean all(Enumerable<?> enumerable,
       Predicate1<TSource> predicate) {
-    throw Extensions.todo();
+    boolean result = true;
+    for (Object o : enumerable) {
+      if (!predicate.apply((TSource) o)) {
+        result = false;
+        break;
+      }
+    }
+
+    return result;
   }
 
   /**
@@ -114,7 +122,22 @@ public abstract class EnumerableDefaults {
    */
   public static <TSource> boolean any(Enumerable<TSource> enumerable,
       Predicate1<TSource> predicate) {
-    throw Extensions.todo();
+
+    boolean result = false;
+    final Enumerator<TSource> os = enumerable.enumerator();
+    try {
+      while (os.moveNext()) {
+        TSource o = os.current();
+        if (predicate.apply(o)) {
+          result = true;
+          break;
+        }
+      }
+      return result;
+    } finally {
+      os.close();
+    }
+
   }
 
   /**
