@@ -396,6 +396,41 @@ public class Linq4jTest {
 
   }
 
+  @Test public void testFirst() {
+    Employee e = emps[0];
+    assertEquals(e, emps[0]);
+    assertEquals(e, Linq4j.asEnumerable(emps).first());
+
+    Department d = depts[0];
+    assertEquals(d, depts[0]);
+    assertEquals(d, Linq4j.asEnumerable(depts).first());
+  }
+
+  @Test public void testFirstPredicate1() {
+    Predicate1<String> startWithS = new Predicate1<String>() {
+      public boolean apply(String s) {
+        return s != null && Character.toString(s.charAt(0)).equals("S");
+      }
+    };
+	
+    Predicate1<Integer> numberGT15 = new Predicate1<Integer>() {
+      public boolean apply(Integer i) {
+        return i > 15;
+      }
+    };
+  	
+    String[] people = {"Brill","Smith","Simpsom"};
+    String[] peopleWithoutCharS = {"Brill","Andrew","Alice"};
+    Integer[] numbers = {5,10,15,20,25};
+    
+    assertEquals(people[1], Linq4j.asEnumerable(people).first(startWithS));
+    assertEquals(numbers[3], Linq4j.asEnumerable(numbers).first(numberGT15));
+
+    // FIXME: What we need return if no one element is satisfied?
+    assertNull(Linq4j.asEnumerable(peopleWithoutCharS).first(startWithS));
+
+  }
+
   @SuppressWarnings("UnnecessaryBoxing")
   @Test public void testIdentityEqualityComparer() {
     final Integer one = new Integer(1);

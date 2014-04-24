@@ -477,7 +477,7 @@ public abstract class EnumerableDefaults {
    * by Enumerable.)
    */
   public static <TSource> TSource first(Enumerable<TSource> enumerable) {
-    throw Extensions.todo();
+    return enumerable.iterator().next();
   }
 
   /**
@@ -486,7 +486,12 @@ public abstract class EnumerableDefaults {
    */
   public static <TSource> TSource first(Enumerable<TSource> enumerable,
       Predicate1<TSource> predicate) {
-    throw Extensions.todo();
+    for (TSource o : enumerable) {
+      if (predicate.apply(o)) {
+        return o;
+      }
+    }
+    return null;
   }
 
   /**
