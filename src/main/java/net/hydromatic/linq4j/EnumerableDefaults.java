@@ -332,7 +332,7 @@ public abstract class EnumerableDefaults {
   public static <TSource> boolean contains(Enumerable<TSource> enumerable,
       TSource element, EqualityComparer comparer) {
     for (TSource o : enumerable) {
-      if (comparer.equal(o, element)){
+      if (comparer.equal(o, element)) {
         return true;
       }
     }

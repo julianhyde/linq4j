@@ -412,17 +412,17 @@ public class Linq4jTest {
         return s != null && Character.toString(s.charAt(0)).equals("S");
       }
     };
-	
+
     Predicate1<Integer> numberGT15 = new Predicate1<Integer>() {
       public boolean apply(Integer i) {
         return i > 15;
       }
     };
-  	
-    String[] people = {"Brill","Smith","Simpsom"};
-    String[] peopleWithoutCharS = {"Brill","Andrew","Alice"};
-    Integer[] numbers = {5,10,15,20,25};
-    
+
+    String[] people = {"Brill", "Smith", "Simpsom"};
+    String[] peopleWithoutCharS = {"Brill", "Andrew", "Alice"};
+    Integer[] numbers = {5, 10, 15, 20, 25};
+
     assertEquals(people[1], Linq4j.asEnumerable(people).first(startWithS));
     assertEquals(numbers[3], Linq4j.asEnumerable(numbers).first(numberGT15));
 
