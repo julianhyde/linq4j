@@ -498,7 +498,7 @@ public abstract class EnumerableDefaults {
         return o;
       }
     }
-    return null;
+    throw new NoSuchElementException();
   }
 
   /**
@@ -507,7 +507,15 @@ public abstract class EnumerableDefaults {
    */
   public static <TSource> TSource firstOrDefault(
       Enumerable<TSource> enumerable) {
-    throw Extensions.todo();
+    final Enumerator<TSource> os = enumerable.enumerator();
+    try {
+      if (os.moveNext()) {
+        return os.current();
+      }
+      return null;
+    } finally {
+      os.close();
+    }
   }
 
   /**
@@ -517,7 +525,12 @@ public abstract class EnumerableDefaults {
    */
   public static <TSource> TSource firstOrDefault(Enumerable<TSource> enumerable,
       Predicate1<TSource> predicate) {
-    throw Extensions.todo();
+    for (TSource o : enumerable) {
+      if (predicate.apply(o)) {
+        return o;
+      }
+    }
+    return null;
   }
 
   /**
@@ -1549,7 +1562,23 @@ public abstract class EnumerableDefaults {
    * sequence.
    */
   public static <TSource> TSource single(Enumerable<TSource> source) {
-    throw Extensions.todo();
+    final Enumerator<TSource> os = source.enumerator();
+    TSource toRet = null;
+    try {
+      if (os.moveNext()) {
+        toRet = os.current();
+
+        if (os.moveNext()) {
+          throw new IllegalStateException();
+        }
+      }
+      if (toRet != null) {
+        return toRet;
+      }
+      throw new IllegalStateException();
+    } finally {
+      os.close();
+    }
   }
 
   /**
@@ -1559,7 +1588,25 @@ public abstract class EnumerableDefaults {
    */
   public static <TSource> TSource single(Enumerable<TSource> source,
       Predicate1<TSource> predicate) {
-    throw Extensions.todo();
+    final Enumerator<TSource> os = source.enumerator();
+    TSource toRet = null;
+    try {
+      while (os.moveNext()) {
+        if (predicate.apply(os.current())) {
+          if (toRet == null) {
+            toRet = os.current();
+          } else {
+            throw new IllegalStateException();
+          }
+        }
+      }
+      if (toRet != null) {
+        return toRet;
+      }
+      throw new IllegalStateException();
+    } finally {
+      os.close();
+    }
   }
 
   /**
@@ -1569,7 +1616,21 @@ public abstract class EnumerableDefaults {
    * sequence.
    */
   public static <TSource> TSource singleOrDefault(Enumerable<TSource> source) {
-    throw Extensions.todo();
+    final Enumerator<TSource> os = source.enumerator();
+    TSource toRet = null;
+    try {
+      if (os.moveNext()) {
+        toRet = os.current();
+      }
+
+      if (os.moveNext()) {
+        return null;
+      }
+
+      return toRet;
+    } finally {
+      os.close();
+    }
   }
 
   /**
@@ -1580,7 +1641,17 @@ public abstract class EnumerableDefaults {
    */
   public static <TSource> TSource singleOrDefault(Enumerable<TSource> source,
       Predicate1<TSource> predicate) {
-    throw Extensions.todo();
+    TSource toRet = null;
+    for (TSource s : source) {
+      if (predicate.apply(s)) {
+        if (toRet != null) {
+          return null;
+        } else {
+          toRet = s;
+        }
+      }
+    }
+    return toRet;
   }
 
   /**
