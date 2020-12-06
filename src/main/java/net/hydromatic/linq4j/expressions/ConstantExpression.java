@@ -25,6 +25,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -150,9 +152,8 @@ public class ConstantExpression extends Expression {
       list(writer, Primitive.asList(value), "[] {\n", ",\n", "}");
       return writer;
     }
-    Constructor constructor = matchingConstructor(value);
-    if (constructor != null) {
-      final Field[] fields = value.getClass().getFields();
+    List<Field> fields = matchingConstructorFields(value);
+    if (fields != null) {
       writer.append("new ").append(value.getClass());
       list(writer,
           Functions.adapt(fields,
@@ -184,27 +185,42 @@ public class ConstantExpression extends Expression {
     writer.end(end);
   }
 
-  private static Constructor matchingConstructor(Object value) {
-    final Field[] fields = value.getClass().getFields();
+  private static List<Field> matchingConstructorFields(Object value) {
+    /* From the JavaDoc for get Fields: "The elements in the returned array
+     * are not sorted and are not in any particular order."
+     */
+    List<Field> fields = Arrays.asList(value.getClass().getFields());
     for (Constructor<?> constructor : value.getClass().getConstructors()) {
-      if (argsMatchFields(fields, constructor.getParameterTypes())) {
-        return constructor;
+      Class<?>[] foo = constructor.getParameterTypes();
+      List<Field> ret = argsMatchFields(fields, foo);
+      if (ret != null) {
+        return ret;
       }
     }
     return null;
   }
 
-  private static boolean argsMatchFields(Field[] fields,
+  private static List<Field> argsMatchFields(List<Field> tmp,
       Class<?>[] parameterTypes) {
-    if (parameterTypes.length != fields.length) {
-      return false;
+    if (parameterTypes.length != tmp.size()) {
+      return null;
     }
-    for (int i = 0; i < fields.length; i++) {
-      if (fields[i].getType() != parameterTypes[i]) {
-        return false;
+
+    List<Field> fields = new ArrayList<Field>(tmp);
+    List<Field> ret = new ArrayList<Field>(fields.size());
+
+  param:
+    for (Class<?> c : parameterTypes) {
+      for (Field f : fields) {
+        if (c == f.getType()) {
+          ret.add(f);
+          fields.remove(f);
+          continue param;
+        }
       }
+      return null;
     }
-    return true;
+    return ret;
   }
 
   private static void escapeString(StringBuilder buf, String s) {
